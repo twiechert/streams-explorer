@@ -137,7 +137,7 @@ class StreamsExplorer:
                 if app.is_common_streams_app():
                     self.applications[app.name] = app
             except Exception as e:
-                logger.debug(e)
+                logger.exception(e)
 
     def get_deployments(self) -> List[V1Deployment]:
         deployments: List[V1Deployment] = []
