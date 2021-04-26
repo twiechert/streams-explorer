@@ -159,7 +159,14 @@ class K8sAppDeployment(K8sApp):
 
     def is_common_streams_app(self) -> bool:
         if self.input_topics is None and self.output_topic is None:
+            logger.info(
+                f"Deployment {self.name} is not a streaming app"
+            )
             return False
+
+        logger.info(
+            f"Deployment {self.name} is a streaming app"
+        )
         return True
 
     def to_dict(self) -> dict:
