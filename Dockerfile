@@ -13,6 +13,8 @@ RUN pip install -U pip && \
     sed -E -i.bak '/^(fastapi|uvicorn|click|h11)=/d' requirements.txt && \
     pip install -r requirements.txt
 
+RUN python -m pytest tests
+
 COPY ./frontend /frontend
 RUN mkdir -p /app/static && \
     npm install --prefix /frontend && \
