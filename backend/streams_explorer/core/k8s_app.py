@@ -104,6 +104,9 @@ class K8sAppCronJob(K8sApp):
 class K8sAppDeployment(K8sApp):
     def __init__(self, deployment: V1Deployment):
         super().__init__()
+        logger.info(
+            f"Deployment {deployment.metadata.name} being processed"
+        )
         self.deployment = deployment
         self.metadata: V1ObjectMeta = deployment.metadata
         self.name = self.get_name()
@@ -119,20 +122,21 @@ class K8sAppDeployment(K8sApp):
         return self.metadata.labels.get("app")
 
     def __get_common_configuration(self):
-        for env in self.container.env:
-            name = env.name
-            if name == self._get_env_name("INPUT_TOPICS"):
-                self.input_topics = self.parse_input_topics(env.value)
-            elif name == self._get_env_name("OUTPUT_TOPIC"):
-                self.output_topic = env.value
-            elif name == self._get_env_name("ERROR_TOPIC"):
-                self.error_topic = env.value
-            elif name == self._get_env_name("EXTRA_INPUT_TOPICS"):
-                self.extra_input_topics = self.parse_extra_topics(env.value)
-            elif name == self._get_env_name("EXTRA_OUTPUT_TOPICS"):
-                self.extra_output_topics = self.parse_extra_topics(env.value)
+        if self.container.env:
+            for env in self.container.env:
+                name = env.name
+                if name == self._get_env_name("INPUT_TOPICS"):
+                    self.input_topics = self.parse_input_topics(env.value)
+                elif name == self._get_env_name("OUTPUT_TOPIC"):
+                    self.output_topic = env.value
+                elif name == self._get_env_name("ERROR_TOPIC"):
+                    self.error_topic = env.value
+                elif name == self._get_env_name("EXTRA_INPUT_TOPICS"):
+                    self.extra_input_topics = self.parse_extra_topics(env.value)
+                elif name == self._get_env_name("EXTRA_OUTPUT_TOPICS"):
+                    self.extra_output_topics = self.parse_extra_topics(env.value)
 
-            extractor_container.on_streaming_app_env_parsing(env, self.name)
+                extractor_container.on_streaming_app_env_parsing(env, self.name)
 
     def __get_attributes(self):
         labels = self.metadata.labels
